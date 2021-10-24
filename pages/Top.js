@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect,useContext } from "react";
+import {AuthContext} from "../components/Context"
 import Link from "next/link";
-import { styled } from "@mui/material/styles";
+import { auth, logOut,signInWithGoogle} from "../components/firebase";
+import Tooltip from "@mui/material/Tooltip";
 
 // header
 import Switch from "@mui/material/Switch";
@@ -17,37 +19,54 @@ import ImageListItem from "@mui/material/ImageListItem";
 import ImageListItemBar from "@mui/material/ImageListItemBar";
 import ListSubheader from "@mui/material/ListSubheader";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const Top = () => {
-  const [currentUser, setCurrentUser] = useState(false);
-  const [like,setLike] = useState({count:0,liked:false})
+  const {currentUser, setCurrentUser,login,setLogin} = useContext(AuthContext)
+  const [search, setSearch] = useState(false);
+ 
+  useEffect(async() => {
+    await signInWithGoogle();
+    auth.onAuthStateChanged(setCurrentUser);
+    console.log(currentUser)
+  }, []);
+
+  useEffect(() => {
+    if (currentUser === null) {
+      setLogin(false);
+
+    } else {
+      setLogin(true);
+      console.log(currentUser)
+    }
+  }, [currentUser]);
+
   const onClickSearch = () => {
-    setCurrentUser(() => {
-      if (currentUser === false) {
+    setSearch(() => {
+      if (search === false) {
         return true;
       } else {
         return false;
       }
     });
   };
-  const onClickLike=()=>{
-   setLike({
-     count:like.count + (like.liked ? -1:1),
-     liked:!like.liked
-   })
-   console.log(like)
+
+  const onClickLogin =async()=>{
+    if(login===false){
+      await signInWithGoogle()
+
+    }else{
+      await logOut()
+    }
   }
   
-
-  const handleChange = (e) => {
-    setNavigationValue(e.target.value);
-  };
-
   const itemData = [
     {
       img: "/BorderCollie.jpg",
       title: "ボーダーコリー",
       age: "12歳",
+      rows: 2,
+      cols: 2,
     },
     {
       img: "/BorderCollie.jpg",
@@ -93,12 +112,19 @@ const Top = () => {
 
   return (
     <>
-      {currentUser ? (
+      {search ? (
         <>
-          <ArrowBackIosIcon
-            style={{ position: "fixed", top: "20", left: "20" }}
-            onClick={onClickSearch}
-          />
+          <Tooltip title="戻る" arrow>
+            <ArrowBackIosIcon
+              style={{
+                position: "fixed",
+                top: "20",
+                left: "20",
+                cursor: "pointer",
+              }}
+              onClick={onClickSearch}
+            />
+          </Tooltip>
           <Paper
             component="form"
             sx={{
@@ -157,44 +183,40 @@ const Top = () => {
                 style={{ fontSize: "40px", marginRight: "10px" }}
               />
               <Switch
-                checked={currentUser}
-                onChange={handleChange}
+                checked={login}
+                onChange={onClickLogin}
                 inputProps={{ "aria-label": "controlled" }}
               />
-            </div>
+              
+            
+             </div>
           </header>
 
           <main style={{ zIndex: 0 }}>
             <ImageList sx={{ width: 1000, height: 700 }}>
-              <ImageListItem cols={2}>
-                <ListSubheader component="div"></ListSubheader>
-              </ImageListItem>
-              {itemData.map((item,index) => (
-                <ImageListItem key={index}>
-                  <img
-                    src={`${item.img}?w=248&fit=crop&auto=format`}
-                    srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                    alt={item.title}
-                    loading="lazy"
-                  />
-                  <ImageListItemBar
-                  key={item.index}
-                    title={item.title}
-                    subtitle={item.age}
-                    actionIcon={
-                      <IconButton
-                        sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                        aria-label={`info about ${item.title}`}
-                      >
-                        {like.liked ? (
-                          <FavoriteBorderIcon value={item.id}style={{color:"red"}} onClick={onClickLike}/>
-                        ) : (
-                          <FavoriteBorderIcon value={item.id}onClick={onClickLike}/>
-                        )}
-                      </IconButton>
-                    }
-                  />
-                </ImageListItem>
+              {itemData.map((item, index) => (
+                <Link href={`/item/${index}`} key={index}>
+                  <ImageListItem key={index}>
+                    <img
+                      src={`${item.img}?w=248&fit=crop&auto=format`}
+                      srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                      alt={item.title}
+                      loading="lazy"
+                    />
+
+                    <ImageListItemBar
+                      key={item.index}
+                      title={item.title}
+                      subtitle={item.age}
+                      actionIcon={
+                        <IconButton
+                          sx={{ color: "rgba(255, 255, 255, 0.54)" }}
+                          aria-label={`info about ${item.title}`}
+                        ></IconButton>
+                      }
+                    />
+                  </ImageListItem>
+                </Link>
               ))}
             </ImageList>
           </main>

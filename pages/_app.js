@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import AuthProvider from "../components/Context";
 import Link from "next/link";
 import PropTypes from "prop-types";
 import Head from "next/head";
@@ -29,72 +30,80 @@ export default function MyApp(props) {
   const [navigationValue, setNavigationValue] = useState("");
 
   return (
-    <CacheProvider value={emotionCache}>
-      <Head>
-        <title>My page</title>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-      </Head>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <Component {...pageProps} />
+    <AuthProvider>
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <title>My page</title>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+          <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-auth.js"></script>
+        </Head>
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <Component {...pageProps} />
 
-        <footer style={{position:"fixed",bottom:"0",width:"100%",marginTop:"100px"}}  >
-         
+          <footer
+            style={{
+              position: "fixed",
+              bottom: "0",
+              width: "100%",
+              marginTop: "200px",
+            }}
+          >
+            <div>
+              <BottomNavigation
+                sx={{ width: "100%" }}
+                value={navigationValue}
+                onChange={() => handleChange(e)}
+                style={{
+                  background: "#f4f4f4",
+                }}
+              >
+                <Link href="/">
+                  <Tooltip title="ホーム" arrow>
+                    <BottomNavigationAction
+                      label="ホーム"
+                      value="Home"
+                      icon={<HomeIcon />}
+                    />
+                  </Tooltip>
+                </Link>
 
-          <div>
-            <BottomNavigation
-              sx={{ width: "100%" }}
-              value={navigationValue}
-              onChange={() => handleChange(e)}
-              style={{
-                background: "#f4f4f4",
-              }}
-            >
-              <Link href="/">
-                <Tooltip title="ホーム" arrow>
-                  <BottomNavigationAction
-                    label="ホーム"
-                    value="Home"
-                    icon={<HomeIcon />}
-                  />
-                </Tooltip>
-              </Link>
+                <Link href="/menu/alert">
+                  <Tooltip title="通知" arrow>
+                    <BottomNavigationAction
+                      label="お知らせ"
+                      value="alert"
+                      icon={<NotificationsActiveIcon />}
+                    />
+                  </Tooltip>
+                </Link>
 
-              <Link href="/menu/alert">
-                <Tooltip title="通知" arrow>
-                  <BottomNavigationAction
-                    label="お知らせ"
-                    value="alert"
-                    icon={<NotificationsActiveIcon />}
-                  />
-                </Tooltip>
-              </Link>
+                <Link href="/menu/pets">
+                  <Tooltip title="里親を募集する" arrow>
+                    <BottomNavigationAction
+                      label="里親を募集する"
+                      value="pets"
+                      icon={<PetsIcon />}
+                    />
+                  </Tooltip>
+                </Link>
 
-              <Link href="/menu/pets">
-                <Tooltip title="里親を募集する" arrow>
-                  <BottomNavigationAction
-                    label="里親を募集する"
-                    value="pets"
-                    icon={<PetsIcon />}
-                  />
-                </Tooltip>
-              </Link>
-
-              <Link href="/menu/mypage">
-                <Tooltip title="マイページ" arrow>
-                  <BottomNavigationAction
-                    label="マイページ"
-                    value="mypage"
-                    icon={<PersonIcon />}
-                  />
-                </Tooltip>
-              </Link>
-            </BottomNavigation>
-          </div>
-        </footer>
-      </ThemeProvider>
-    </CacheProvider>
+                <Link href="/menu/mypage">
+                  <Tooltip title="マイページ" arrow>
+                    <BottomNavigationAction
+                      label="マイページ"
+                      value="mypage"
+                      icon={<PersonIcon />}
+                    />
+                  </Tooltip>
+                </Link>
+              </BottomNavigation>
+            </div>
+          </footer>
+        </ThemeProvider>
+      </CacheProvider>
+    </AuthProvider>
   );
 }
 

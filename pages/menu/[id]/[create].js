@@ -76,7 +76,7 @@ const create = () => {
     <h2>年齢</h2>
     <Box sx={{ minWidth: 120 }}>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">犬のカテゴリー</InputLabel>
+            <InputLabel id="demo-simple-select-label">犬の年齢</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -84,9 +84,9 @@ const create = () => {
               label="dogCategory"
               onChange={handleChange}
             >
-              <MenuItem value={"柴犬"}>柴犬</MenuItem>
-              <MenuItem value={"ボーダーコリー"}>ボーダーコリー</MenuItem>
-              <MenuItem value={"オーストラリアンシェパード"}>オーストラリアンシェパード</MenuItem>
+              <MenuItem value={0}>0</MenuItem>
+              <MenuItem value={1}>1</MenuItem>
+              <MenuItem value={2}>2</MenuItem>
             </Select>
           </FormControl>
         </Box>
